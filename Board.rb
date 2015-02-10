@@ -13,31 +13,45 @@ class Board
 
 	# Creating a new random start for the board
 	def random_start
-		@board.collect!{ rand( @board.length ) }
+		# @board.collect!{ rand( @board.length ) }
+		# @board = 1.step( @board.length, 1 ).to_a.shuffle
+		@board = Array.new( @board.length ){ |e| e }.shuffle
 	end
 
 	# Creating the neighborhood of the current state
 	# The parameter distance is the movement that every Queen is supposed to do
 	def best_neighbor( distance = 1 )
-		best = [ NIL, final_state?( @board ) ]
-		for i in 0..@board.length-1
+		current_conflicts = final_state?( @board )
+		neighborhood = Array.new(0) 
+		@board.each_with_index do | board_i, i |
 			[-1, 1].each do
 				|sign| 
 				neighbor = @board.clone
-				(@board[i]+sign*distance).between?( 0, @board.length-1 ) ? 
-					neighbor[i]=@board[i]+sign*distance : neighbor[i]=nil
+				(board_i+sign*distance).between?( 0, @board.length-1 ) ? 
+					neighbor[i]=board_i+sign*distance : neighbor[i]=nil
 				if neighbor.count{ |j| j.nil? } == 0
 					# Check only for improvements, staying at the same number 
 					# of conflicts will make the job a lot harder and longer.
-					if neighbor != @board && 
-					   final_state?( neighbor ) < best[1]
-						best = [ neighbor, final_state?( neighbor ) ]
+					neighbor_conflicts = final_state?( neighbor )
+					# Checking the difference between the arrays is useless,
+					# because if they are the same they will also have the 
+					# same amount of conflicts so, given the fact that we are 
+					# looking for only improvements, that array will not be 
+					# checked anyway.
+					# if neighbor != @board && conflicts_neighbor < best[1]
+					if neighbor_conflicts < current_conflicts
+						neighborhood << neighbor
 					end
 				end
 			end
 		end
 
-		return best[0]
+		# return best[0]
+		# I return one random neighbor from the neighborhood
+		# I should weight the probabilities or return the best one, but if I 
+		# am looking for the best one then i could find it updating one value 
+		# and not keeping all the neighborhood.
+		return neighborhood[ rand( neighborhood.length ) ]
 	end
 
 	# Assigning a new state to the board
