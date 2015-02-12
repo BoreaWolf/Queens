@@ -21,7 +21,7 @@ steps_restarts = 0
 dead_restarts = 0
 start_time = Time.now
 
-until board.final_state? == 0
+until board.board_conflict == 0
 
 	if DEBUG
 		puts "Trying #{steps}"
@@ -36,7 +36,10 @@ until board.final_state? == 0
 		if DEBUG
 			puts "Neighborhood search distance #{dist}"
 		end
-		if board.assign( board.best_neighbor dist )
+		# Searching the best choice from this state
+		best_choice = board.best_neighbor dist
+		best_choice = best_choice.nil? ? nil : best_choice.get_state
+		if board.assign( best_choice )
 			if DEBUG
 				puts "Found a new best state #{board.plot} with #{board.final_state?} conflicts"
 			end
@@ -51,8 +54,8 @@ until board.final_state? == 0
 	# If i reach the MAX_STEPS limit i restart the board with a new configuration
 	if steps == max_steps || !modified
 		board.random_start
-		# puts "Restarted after #{steps} steps"
 		if DEBUG
+			puts "Restarted after #{steps} steps"
 			puts "*** Starting a new board: #{board.plot} with #{board.final_state?} conflicts ***"
 		end
 		steps = 0
