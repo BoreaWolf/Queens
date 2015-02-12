@@ -2,21 +2,25 @@
 # N Queens problem solved with the Hill Climbing Algorithm
 
 require_relative "Board.rb"
-MAX_STEPS = 20
 DEBUG = FALSE
 
 number_of_queens = ( ARGV[ 0 ] || 8 ).to_i
 puts "Hello World bitches, we are the #{number_of_queens} Queens."
 
 board = Board.new( number_of_queens )
+if DEBUG
+	puts "Start #{board.plot}"
+end
 
 # Starting with the Hill Climbing algorithm, knowing that we want to stop
-# the algorithm after 20-30 steps.
+# the algorithm after max_steps steps, proportional to the board dimension.
+max_steps = number_of_queens * 3 / 2
 steps = 0
 full_steps = 0
 steps_restarts = 0
 dead_restarts = 0
 start_time = Time.now
+
 until board.final_state? == 0
 
 	if DEBUG
@@ -26,7 +30,7 @@ until board.final_state? == 0
 	# number of conflicts
 	modified = FALSE
 	dist = 1
-	while dist <= number_of_queens/2
+	while dist <= number_of_queens
 		full_steps += 1
 
 		if DEBUG
@@ -45,8 +49,9 @@ until board.final_state? == 0
 	steps += 1
 
 	# If i reach the MAX_STEPS limit i restart the board with a new configuration
-	if steps == MAX_STEPS || !modified
+	if steps == max_steps || !modified
 		board.random_start
+		# puts "Restarted after #{steps} steps"
 		if DEBUG
 			puts "*** Starting a new board: #{board.plot} with #{board.final_state?} conflicts ***"
 		end

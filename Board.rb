@@ -15,24 +15,27 @@ class Board
 	def random_start
 		# @board.collect!{ rand( @board.length ) }
 		# @board = 1.step( @board.length, 1 ).to_a.shuffle
-		@board = Array.new( @board.length ){ |e| e }.shuffle
+		@board = (0...@board.length).to_a.shuffle
 	end
 
 	# Creating the neighborhood of the current state
 	# The parameter distance is the movement that every Queen is supposed to do
 	def best_neighbor( distance = 1 )
-		current_conflicts = final_state?( @board )
+		# current_conflicts = final_state?( @board )
+		current_conflicts = board_conflict
 		neighborhood = Array.new(0) 
-		@board.each_with_index do | board_i, i |
-			[-1, 1].each do
-				|sign| 
+		# @board.each_with_index do | board_i, i |
+		(0...@board.length).map{ |i| queen_conflict(i) }.map.with_index.sort.reverse.map(&:last).each do |i|
+			[-1, 1].each do	|sign| 
 				neighbor = @board.clone
-				(board_i+sign*distance).between?( 0, @board.length-1 ) ? 
-					neighbor[i]=board_i+sign*distance : neighbor[i]=nil
+				(@board[i]+sign*distance).between?( 0, @board.length-1 ) ? 
+					neighbor[i]=@board[i]+sign*distance : neighbor[i]=nil
 				if neighbor.count{ |j| j.nil? } == 0
 					# Check only for improvements, staying at the same number 
 					# of conflicts will make the job a lot harder and longer.
-					neighbor_conflicts = final_state?( neighbor )
+					# neighbor_conflicts = final_state?( neighbor )
+					neighbor_conflicts = board_conflict( neighbor )
+					
 					# Checking the difference between the arrays is useless,
 					# because if they are the same they will also have the 
 					# same amount of conflicts so, given the fact that we are 
@@ -40,11 +43,11 @@ class Board
 					# checked anyway.
 					# if neighbor != @board && conflicts_neighbor < best[1]
 					if neighbor_conflicts < current_conflicts
-						neighborhood << neighbor
+						neighborhood += Array.new( current_conflicts - neighbor_conflicts, neighbor )
 					end
 				end
 			end
-		end
+	end
 
 		# return best[0]
 		# I return one random neighbor from the neighborhood
@@ -74,7 +77,7 @@ class Board
 		# elements: if the distance equals the difference of the numbers 
 		# then we have an attack
 		state.each_with_index do | elem_j, j |
-			for k in j+1..state.length-1
+			(j+1...state.length).each do |k|
 				if !( elem_j != state[ k ] + ( k - j ) &&
 					  elem_j != state[ k ] - ( k - j ) )
 					# return FALSE
@@ -84,6 +87,23 @@ class Board
 		end
 
 		return conflicts
+	end
+
+	# Counting the conflict that a Queen generates
+	def queen_conflict( index, state = @board )
+		conflict = @board.count{ |i| i == @board[index] } - 1
+
+		@board.each_with_index do | elem_i, i |
+			if i != index && ( @board[index] - elem_i ).abs == ( i - index ).abs
+				conflict += 1
+			end
+		end
+
+		return conflict
+	end
+
+	def board_conflict( state = @board )
+		return (0...state.length).inject(0){ |sum, i| sum + queen_conflict(i,state) }
 	end
 
 	# Printer
