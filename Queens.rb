@@ -8,6 +8,7 @@ number_of_queens = ( ARGV[ 0 ] || 8 ).to_i
 puts "Hello World bitches, we are the #{number_of_queens} Queens."
 
 board = Board.new( number_of_queens )
+board.random_start
 if DEBUG
 	puts "Start #{board.plot}"
 end
