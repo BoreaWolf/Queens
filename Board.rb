@@ -35,7 +35,8 @@ class Board
 		conflict = @board.count{ |i| i == @board[index] } - 1
 
 		@board.each_with_index do | elem_i, i |
-			if i != index && ( @board[index] - elem_i ).abs == ( i - index ).abs
+			if i != index && elem_i != nil && 
+				( @board[index] - elem_i ).abs == ( i - index ).abs
 				conflict += 1
 			end
 		end
@@ -65,22 +66,38 @@ class Board
 		# I am working on a not full Queen board, so i'm going to take the 
 		# first not positioned Queen, following the order of the rows, and 
 		# finding all the possible valid positions without generating conflicts
+
+		# I will work on a copy of the original board, or it will be modified 
+		# also outside
+		board_original = @board.clone
 		row = @board.find_index( nil )
 		# If there is no other possible Queen to place then I return a failure
 		unless row.nil?
 			# Really bad probably! But whatever.
+			# TODO Not sure if it's correct, probably not because adds the 
+			# indexes after deleting some elements. To be checked anyway, even 
+			# if i changed it.
 			positions = (0...@board.length).map{ |i| 
 				@board[row] = i
-				queen_conflict( row ) }.keep_if{ |i| i==0 }
+				queen_conflict( row ) }.map.with_index.to_a.keep_if{ |i| i[0]==0 }.map(&:last)
 		end
+
+		# Restoring the original board
+		@board = board_original.clone
 
 		return positions
 
 	end
 
+	# Setting the first not positioned queen at the given position
+	def add_queen( position )
+		@board[ @board.find_index( nil ) ] = position 
+		puts "Added Queen #{position} -> #{@board}"
+	end
+
 	# Printer
 	def plot
-		return "#{@board}"
+		puts "This is the board: #{@board}"
 	end
 
 	# Pretty printer
@@ -90,6 +107,7 @@ class Board
 
 	# Prettier printer
 	def prettier_printer
+		puts "#{@board}"
 		@board.each{ |i|
 			for j in 0..i-1
 				printf "-"
@@ -105,7 +123,7 @@ class Board
 	# Creating the neighborhood of the current state based on a Hill-Climbing
 	# local search.
 	# The parameter distance is the movement that every Queen is supposed to do
-	def best_neighbor_HC( distance = 1 )
+	def best_neighbor( distance = 1 )
 		current_conflicts = self.board_conflict
 		neighborhood = Array.new(0) 
 		# Cycling on the array, sorting it by the number of conflicts that 
