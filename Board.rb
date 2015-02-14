@@ -95,9 +95,18 @@ class Board
 		puts "Added Queen #{position} -> #{@board}"
 	end
 
+	# Deletes the last queen from the board
+	def remove_last_queen
+		row = ( @board.find_index( nil ) ? @board.find_index( nil ) : @board.length ) - 1
+		string = "Before: #{@board} "
+		@board[ row ] = nil
+		string += "After: #{@board}"
+		puts "Deleted the #{row} Queen from the board. #{string}"
+	end
+
 	# Printer
 	def plot
-		puts "This is the board: #{@board}"
+		return "Board: #{@board}"
 	end
 
 	# Pretty printer

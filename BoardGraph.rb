@@ -18,6 +18,10 @@ class BoardGraph
 		@node.next_state
 	end
 
+	def delete_last_action
+		@node.delete_last_action
+	end
+
 	def next_state( action )
 		# Creting the new state knowing the action, that represents the number 
 		# where the first not placed Queen have to go
@@ -75,6 +79,10 @@ class BoardNode
 		@unexplored_actions = @state.find_actions
 	end
 
+	def delete_last_action
+		@state.remove_last_queen
+	end
+
 	# Useful Getters and Setters
 	def get_unexplored_actions
 		@unexplored_actions
@@ -105,9 +113,9 @@ class BoardNode
 	end
 
 	def plot
-		puts " ** Current state ** "
-		@state.plot
-		puts "Father: #{@father}"
-		puts " ***** "
+		result = @state.plot 
+		result += "\tFather: #{@father}} ->\n"
+		result += @father.nil? ? "nil" : @father.plot
+		return result
 	end
 end	
