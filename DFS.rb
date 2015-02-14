@@ -24,11 +24,11 @@ class DFS
 		# and iterates on them.
 		result = -1
 		@graph.find_next_actions
-		puts "A -> Found next actions: #{@graph.get_current_node.get_unexplored_actions}"
+		puts "Un-A -> #{@graph.get_current_node.get_unexplored_actions}"
+		# TODO Make this correct, i am skipping a level in the structures
 		@graph.get_current_node.get_unexplored_actions.each do |i|
 			# I have to create a new node starting from the current one and 
 			# knowing the action we have chosen
-			puts "Trying with the action #{i}"
 			@graph.next_state( i )
 			result = self.DFS_solution
 		end

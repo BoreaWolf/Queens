@@ -16,6 +16,7 @@ class Board
 	end
 
 	# Assigning a new state to the board
+	# TODO Change assign in set_state
 	def assign( state )
 		if !state.nil? && state != @board
 			@board = state
@@ -28,6 +29,11 @@ class Board
 	# Getting the current state
 	def get_state
 		@board
+	end
+
+	# Size of the board
+	def size
+		@board.length
 	end
 
 	# Counting the conflicts that a Queen generates
@@ -92,16 +98,16 @@ class Board
 	# Setting the first not positioned queen at the given position
 	def add_queen( position )
 		@board[ @board.find_index( nil ) ] = position 
-		puts "Added Queen #{position} -> #{@board}"
+		puts "Queen-A #{position} -> #{@board}"
 	end
 
 	# Deletes the last queen from the board
 	def remove_last_queen
 		row = ( @board.find_index( nil ) ? @board.find_index( nil ) : @board.length ) - 1
-		string = "Before: #{@board} "
+		string = "#{@board}"
 		@board[ row ] = nil
-		string += "After: #{@board}"
-		puts "Deleted the #{row} Queen from the board. #{string}"
+		string += " => #{@board}"
+		puts "D-Q #{row} -> #{string}"
 	end
 
 	# Printer
