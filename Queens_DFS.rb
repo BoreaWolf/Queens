@@ -10,14 +10,15 @@ puts "Hello World bitches, we are the #{number_of_queens} Queens."
 
 solver = DFS.new( number_of_queens )
 if DEBUG
-	puts "Start #{solver.plot_board}"
+	puts "Start #{solver.plot_solution}"
 end
 
 
 start_time = Time.now
-solution = solver.DFS_solution
+solver.DFS_solution
 end_time = Time.now
-solver.plot_board
 puts "Time: #{ end_time - start_time } seconds"
-puts "Solution: #{solution}"
-solution.plot
+puts "Solution:" 
+solver.plot_prettier_solution
+# Plots the path to get to the solution, could be huge to plot with huge boards
+# puts "Graph: #{solver.plot_graph}"

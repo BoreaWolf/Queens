@@ -6,12 +6,11 @@ class BoardNode
 
 	# Constructor
 	def initialize( board_dimension, father = nil, action = nil )
-		# puts "New-BN -> dim: #{board_dimension}, f: #{father}, a: #{action}"
 		# Current board state
 		@state = Board.new( board_dimension )
 		unless action.nil?
 			@state.assign( father.get_state.get_state )
-			self.modify_state( action )
+			@state.add_queen( action )
 		end
 		# Father of the current node, used to backtrack the graph
 		@father = father
@@ -24,6 +23,8 @@ class BoardNode
 		@unexplored_actions = Array.new(0)
 
 		# Used to keep track of sons and siblings
+		# Not used for now, but using these could let me create the whole
+		# explored graph
 		@sons = Array.new(0)
 		@siblings = Array.new(0)
 	end
@@ -37,23 +38,6 @@ class BoardNode
 
 	def delete_last_action
 		@state.remove_last_queen
-	end
-
-	# Stuff for in-graph movements
-	def add_son( son )
-		@sons += son
-	end
-
-	def add_sibling( sibling )
-		@siblings += sibling
-	end
-
-	def get_sons
-		@sons
-	end
-	
-	def get_siblings
-		@siblings
 	end
 
 	def get_board_dimension
@@ -73,12 +57,12 @@ class BoardNode
 		@unexplored_actions = Array.new(0)
 	end
 
-	def set_father( father )
-		@father = father
+	def get_father
+		@father
 	end
 
-	def modify_state( action )
-		@state.add_queen( action )
+	def set_father( father )
+		@father = father
 	end
 
 	def get_state
@@ -89,17 +73,27 @@ class BoardNode
 		@state.assign( state )
 	end
 
+	def modify_state( action )
+		@state.add_queen( action )
+	end
+
 	def final_state?
 		@state.final_state?
 	end
 
 	def plot
-		result = "BN-start\n"
-		result += @state.plot 
+		result = "Board: #{@state.plot}"
 		result += "\tUn-actions: #{@unexplored_actions}"
 		result += "\tFather: #{@father} -> "
 		result += @father.nil? ? "nil" : ( "\n" + @father.plot )
-		result += "\nBN-end"
 		return result
+	end
+
+	def plot_state
+		@state.plot
+	end
+	
+	def plot_prettier_solution
+		@state.prettier_printer
 	end
 end	

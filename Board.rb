@@ -19,7 +19,7 @@ class Board
 	# TODO Change assign in set_state
 	def assign( state )
 		if !state.nil? && state != @board
-			@board = state
+			@board = state.clone
 			return TRUE
 		else
 			return FALSE
@@ -98,21 +98,27 @@ class Board
 	# Setting the first not positioned queen at the given position
 	def add_queen( position )
 		@board[ @board.find_index( nil ) ] = position 
-		puts "Queen-A #{position} -> #{@board}"
+		if DEBUG
+			puts "Queen-A #{position} -> #{@board}"
+		end
 	end
 
 	# Deletes the last queen from the board
 	def remove_last_queen
 		row = ( @board.find_index( nil ) ? @board.find_index( nil ) : @board.length ) - 1
-		string = "#{@board}"
+		if DEBUG
+			string = "#{@board}"
+		end
 		@board[ row ] = nil
-		string += " => #{@board}"
-		puts "D-Q #{row} -> #{string}"
+		if DEBUG
+			string += " => #{@board}"
+			puts "D-Q #{row} -> #{string}"
+		end
 	end
 
 	# Printer
 	def plot
-		return "Board: #{@board}"
+		return "#{@board}"
 	end
 
 	# Pretty printer
